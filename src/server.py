@@ -23,6 +23,7 @@ from flask import (
     send_file,
     abort,
 )
+from flask_cors import CORS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, 'log')
@@ -32,6 +33,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s', level=loggin
 logging = logging.getLogger(__name__)
 
 app = Flask(__name__)
+cors = CORS(app)
 
 @app.route("/")
 def index():
@@ -81,7 +83,11 @@ def detect():
   if not results:
     abort(500, "INTERNAL ERROR: %s" % (image_file.filename or image_url))
   logging.info("END DETECT %d FACES FOR %s", len(results), input_image_id)
-  return jsonify(results)
+  #return jsonify(results)
+  # Response
+  resp = jsonify(results)
+  resp.headers['Access-Control-Allow-Origin'] = '*'
+  return resp
 
 
 def genereate_image_id_path():
